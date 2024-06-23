@@ -31,7 +31,7 @@ ipcRenderer.on("directory-change", function(event, data) {
     // Add an event listener to the button
     alertButton.addEventListener("click", (function(item) {
         return function() {
-            alert(item);
+            readFileContent(item);
         };
     })(data[i]));
     
@@ -40,3 +40,11 @@ ipcRenderer.on("directory-change", function(event, data) {
 }
   //term.write(data[0]);
 })
+
+
+/**----------------------
+ **      READ CONTENT FROM SELECTED FILE 
+ *------------------------**/
+const readFileContent = (file) => {
+  ipcRenderer.send("readFile", file)
+}
