@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="node_modules/xterm/css/xterm.css" />
-    <script src="node_modules/xterm/lib/xterm.js"></script>
+    <link rel="stylesheet" href="./node_modules/xterm/css/xterm.css" />
+    <script src="./node_modules/xterm/lib/xterm.js"></script>
   </head>
   <body>
-
-    <ul id="directory" style="list-style: none;"></ul>
-    <div id="terminal" style="height: 25%; width: 100%;"></div>
-    <script src="renderer.js"></script>
+    <div style="display: flex; flex-direction: row;">
+      <ul id="directory" style="list-style: none;"></ul>
+      <div id="editor" style="height: 75%"></div>
+      <p id="file-content"></p>
+    </div>
+    <div id="terminal" style="height: 25%; width: 50%;"></div>
+    <script type="module" src="./renderer.js"></script>
   </body>
 </html>

@@ -21,50 +21,6 @@ var fileContent = ""
 var directoryFiles = []
 var directoryFileContents = []
 
-const readFilePromise = promisify(fs.readFile);
-const readdirPromise = promisify(fs.readdir);
-const statPromise = promisify(fs.stat);
-
-
-
-/**----------------------
- **      METHOD TO PROCESS FILES
- *------------------------**/
-/*
- async function processFiles(directory) {
-  try {
-    directoryFiles = await readdirPromise(directory);
-
-    for (const file of directoryFiles) {
-      const filePath = path.join(directory, file);
-      const fileStat = await statPromise(filePath);
-
-      if (fileStat.isDirectory()) {
-        // If it is a directory, read its contents
-        const dirContents = await readdirPromise(filePath);
-        directoryFileContents.push(dirContents);
-        //console.log("This is a directory!")
-      } else {
-        // If it is a file, read its contents
-        try {
-          const data = await readFilePromise(filePath, 'utf-8');
-          directoryFileContents.push(data);
-          //console.log("This is a file!")
-
-        } catch (err) {
-          console.log(err);
-          directoryFileContents.push(null);
-        }
-      }
-    }
-
-  } catch (err) {
-    console.error('Error reading directory:', err);
-  }
-
-  console.log("Contents: " + directoryFileContents[4]);
-}
-*/
 
 // Terminal
 var ptyProcess = pty.spawn(shell, [], {
@@ -119,28 +75,6 @@ const template = [
               directory = result.filePaths[0];
               directoryFiles = fs.readdirSync(directory);
               
-              //console.log(directoryFiles.length)
-              // Get file content
-              //processFiles(directory)
-
-                /*fs.readFile(directory + '/' + directoryFiles[i] , 'utf-8', (err, data) => {
-                  console.log(i);
-
-                  if(err){
-                    directoryFileContents.push(data);
-                    console.log(i)
-                  }
-                  //console.log(data);
-                  //directoryFileContents.push(data);
-                  //console.log(directoryFileContents[i]);
-
-                  //console.log(i);
-                  //console.log(directoryFiles.length);
-                });*/
-              
-              //console.log("Contents: " + directoryFileContents[4]);
-
-              //console.log(directory);
               console.log(directoryFiles);
 
               ptyProcess.write("cd " + directory + '\r');
@@ -275,12 +209,14 @@ const createWindow = () => {
   });
 
   // Read file
-  ipcMain.on("readFile", function(event, data){ 
-     console.log((fs.readFileSync(directory + "/" + data).toString()));
+  ipcMain.on("read-file", function(event, data){ 
+     fileContent = fs.readFileSync(directory + "/" + data, 'utf8');
+     console.log(fileContent);
+     event.sender.send("display-content", fileContent);
   })
 };
 
-// CLose app when all windows are closed if not on Mac
+// Close app when all windows are closed if not on Mac
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
