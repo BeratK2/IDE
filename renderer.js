@@ -2,9 +2,11 @@
 const { ipcRenderer } = require("electron");
 const { Terminal } = require("xterm");
 
+var editor;
 var term = new Terminal();
 var directoryList = document.getElementById("directory");
 var selectedFile = "";
+var selectedFileContent = "";
 
 term.open(document.getElementById("terminal"));
 term.onData((e) => {
@@ -49,31 +51,35 @@ ipcRenderer.on("directory-change", function (event, data) {
 });
 
 /**----------------------
- **      READ CONTENT FROM SELECTED FILE
+ **      READ CONTENT FROM SELECTED FILE AND APPEND TO ACE EDITOR
  *------------------------**/
 // Send requested file
 const readFileContent = (file) => {
-  ipcRenderer.send("read-file", file);
+
+  ipcRenderer.send("read-file", file); 
 };
 
 // Get read file content and append it to the editor
 ipcRenderer.on("display-content", function (event, data) {
-  document.getElementById("file-content").append(data);
+  // Append data to editor 
+  document.getElementById("editor").append(data);
+  editor = ace.edit("editor");
+  editor.setTheme("ace/theme/monokai");
+  editor.session.setMode("ace/mode/javascript");
 
-  //require.config({ paths: { vs: "./node_modules/monaco-editor/min/vs" } });
-  //oadMonacoEditor(data); // Pass the data to the Monaco Editor initialization function
+  // Set selectedFileContent to
+  editor.session.on('change', function() {
+    console.log();
+  });
+  
 });
 
-
-/* Load Monaco Editor using AMD loader
-function loadMonacoEditor(data) {
-  require.config({ paths: { 'vs': './node_modules/monaco-editor/min/vs' }});
-  require(['vs/editor/editor.main'], function() {
-    monaco.editor.create(document.getElementById('editor'), {
-      value: data || '',
-      language: 'javascript',
-      automaticLayout: true,
-    });
-  });
-}
-*/
+/**======================
+ **      SAVE FILE
+ *========================**/
+ipcRenderer.on("file-saved", function (event, data){
+  //TODO: Need case where file is not selected
+  
+  selectedFileContent = editor.getValue();
+  ipcRenderer.send("write-to-file", {file: selectedFile, fileContent: selectedFileContent});
+})

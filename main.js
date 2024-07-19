@@ -1,3 +1,4 @@
+//Hello World
 const {
   app,
   BrowserWindow,
@@ -56,10 +57,9 @@ const template = [
   {
     label: "File",
     submenu: [
-      {
+      { 
         // Open Folder Button
         label: "Open Folder",
-
         // Open directory from path
         click() {
           dialog
@@ -84,7 +84,20 @@ const template = [
               console.error(err);
             });
         },
+        
       },
+      {
+        // Save button
+        //TODO Add cmd + s or ctrl + s and add functionality
+        label: "Save",
+        click() { 
+          win.webContents.send("file-saved");
+        }
+        
+      },
+      //TODO Need a save button and save as button
+      //TODO  Need new file, and new window button
+    
       isMac ? { role: "close" } : { role: "quit" },
     ],
   },
@@ -190,7 +203,7 @@ const createWindow = () => {
    },
   });
 
-  win.loadFile("index.html");
+  win.loadFile("index.html"); // Load html file
 
   // Close window
   win.on("closed", function () {
@@ -213,8 +226,25 @@ const createWindow = () => {
      fileContent = fs.readFileSync(directory + "/" + data, 'utf8');
      console.log(fileContent);
      event.sender.send("display-content", fileContent);
-  })
+  });
+
+  // Write to file 
+  ipcMain.on("write-to-file", function(event, data){ 
+    console.log(data.fileContent);
+
+    fs.writeFile(directory + "/" + data.file, data.fileContent, err => {
+      if (err) {
+        console.error(err);
+      } else {
+        // file written successfully
+        console.log("file written successfully")
+      }
+    });
+    
+ });
+
 };
+
 
 // Close app when all windows are closed if not on Mac
 app.on("window-all-closed", () => {

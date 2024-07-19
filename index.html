@@ -5,12 +5,15 @@
     <script src="./node_modules/xterm/lib/xterm.js"></script>
   </head>
   <body>
-    <div style="display: flex; flex-direction: row;">
+    <div style="display: flex; flex-direction: column;">
+    <div style="display: flex; flex-direction: row; height: 100%;">
       <ul id="directory" style="list-style: none;"></ul>
       <div id="editor" style="height: 75%"></div>
-      <p id="file-content"></p>
     </div>
-    <div id="terminal" style="height: 25%; width: 50%;"></div>
+    <div id="terminal" style="height: 25%; width: 100%;"></div>
+  </div>
+
+    <script src="./src-min/ace.js" type="text/javascript" charset="utf-8"></script>
     <script type="module" src="./renderer.js"></script>
   </body>
 </html>
