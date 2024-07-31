@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  .node rect {
+    fill: #eee;
+    stroke: #555;
+    stroke-width: 1.5px;
+  }
+  .node text {
+    font: 12px sans-serif;
+    text-anchor: middle; /* Center the text */
+  }
+  .link {
+    fill: none;
+    stroke: #555;
+    stroke-opacity: 0.4;
+    stroke-width: 1.5px;
+  }
+</style>
+<svg width="960" height="600"></svg>
+<script src="./d3.js"></script>
+<script>
+  // TODO: Prevent overlapping nodes
+  const treeData = {
+    "name": "LOOLOLOLLOL  NNFNFNNFNF FNNNFN NFNFNFN",
+    "children": [
+      {
+        "name": "LOOLOLOLLOL  NNFNFNNFNF FNNNFN NFNFNFN",
+        "children": [
+          { "name": "LOOLOLOLLOL  NNFNFNNFNF FNNNFN NFNFNFN" },
+          { "name": "LOOLOLOLLOL  NNFNFNNFNF FNNNFN NFNFNFN" }
+        ]
+      },
+      { "name": "Child 2" }
+    ]
+  };
+
+  const margin = {top: 20, right: 90, bottom: 30, left: 90},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+  const svg = d3.select("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  const root = d3.hierarchy(treeData);
+
+  const treeLayout = d3.tree().size([width, height]);
+
+  treeLayout(root);
+
+  svg.selectAll('.link')
+    .data(root.links())
+    .enter()
+    .append('path')
+    .attr('class', 'link')
+    .attr('d', d3.linkVertical()
+      .x(d => d.x)
+      .y(d => d.y));
+
+  const nodes = svg.selectAll('.node')
+    .data(root.descendants())
+    .enter()
+    .append('g')
+    .attr('class', 'node')
+    .attr('transform', d => 'translate(' + d.x + ',' + d.y + ')');
+
+  nodes.append('text')
+    .attr('dy', '.35em')
+    .attr('x', 0)
+    .attr('y', 0)
+    .text(d => d.data.name)
+    .each(function(d) {
+      // Use getBBox to get the bounding box of the text
+      const bbox = this.getBBox();
+      // Add rectangle based on the bounding box dimensions
+      d3.select(this.parentNode)
+        .insert('rect', 'text')
+        .attr('x', bbox.x - 5)
+        .attr('y', bbox.y - 2)
+        .attr('width', bbox.width + 10)
+        .attr('height', bbox.height + 4)
+        .attr('rx', 5)
+        .attr('ry', 5);
+    });
+</script>

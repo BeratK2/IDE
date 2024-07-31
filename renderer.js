@@ -8,6 +8,8 @@ var directoryList = document.getElementById("directory");
 var selectedFile = "";
 var selectedFileContent = "";
 
+console.log("Editor: " + editor);
+
 term.open(document.getElementById("terminal"));
 term.onData((e) => {
   ipcRenderer.send("terminal.toTerm", e);
@@ -78,8 +80,11 @@ ipcRenderer.on("display-content", function (event, data) {
  **      SAVE FILE
  *========================**/
 ipcRenderer.on("file-saved", function (event, data){
-  //TODO: Need case where file is not selected
-  
-  selectedFileContent = editor.getValue();
-  ipcRenderer.send("write-to-file", {file: selectedFile, fileContent: selectedFileContent});
+  if(!editor){
+    alert("Please choose a file")
+  }
+  else{
+    selectedFileContent = editor.getValue();
+    ipcRenderer.send("write-to-file", {file: selectedFile, fileContent: selectedFileContent});
+  }
 })

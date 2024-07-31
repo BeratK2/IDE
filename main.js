@@ -1,4 +1,4 @@
-//Hello World
+// Hello World
 const {
   app,
   BrowserWindow,
@@ -88,14 +88,14 @@ const template = [
       },
       {
         // Save button
-        //TODO Add cmd + s or ctrl + s and add functionality
         label: "Save",
+        accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S',
         click() { 
           win.webContents.send("file-saved");
         }
         
       },
-      //TODO Need a save button and save as button
+      //TODO Need a save as button
       //TODO  Need new file, and new window button
     
       isMac ? { role: "close" } : { role: "quit" },
@@ -203,7 +203,7 @@ const createWindow = () => {
    },
   });
 
-  win.loadFile("index.html"); // Load html file
+  win.loadFile("todo.html"); // Load html file
 
   // Close window
   win.on("closed", function () {
@@ -212,26 +212,21 @@ const createWindow = () => {
 
   // Start terminal
   ptyProcess.on("data", function (data) {
-    console.log("Pty Data: " + data);
     win.webContents.send("terminal.incData", data);
   });
 
   ipcMain.on("terminal.toTerm", function (event, data) {
-    console.log("Terminal data: " + data)
     ptyProcess.write(data);
   });
 
   // Read file
   ipcMain.on("read-file", function(event, data){ 
      fileContent = fs.readFileSync(directory + "/" + data, 'utf8');
-     console.log(fileContent);
      event.sender.send("display-content", fileContent);
   });
 
   // Write to file 
   ipcMain.on("write-to-file", function(event, data){ 
-    console.log(data.fileContent);
-
     fs.writeFile(directory + "/" + data.file, data.fileContent, err => {
       if (err) {
         console.error(err);
